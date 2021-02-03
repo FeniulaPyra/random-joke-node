@@ -1,4 +1,4 @@
-console.log("First web service starting up...");
+//console.log("First web service starting up...");
 
 // 1 - pull in the HTTP server module
 const http = require("http");
@@ -55,8 +55,8 @@ const onRequest = (request, response) => {
 	//console.log(request.headers);
 	const parsedUrl = url.parse(request.url);
 	const pathname = parsedUrl.pathname;
-	console.log("parsedUrl=", parsedUrl);
-	console.log("pathname=", pathname);
+	//console.log("parsedUrl=", parsedUrl);
+	//console.log("pathname=", pathname);
 	
 	
 	if(pathname == "/random-joke") {
@@ -75,4 +75,4 @@ const onRequest = (request, response) => {
 // 8 - create the server, hook up the request handling function, and start listening on `port`
 http.createServer(onRequest).listen(port);
 
-console.log(`Listening on 127.0.0.1: ${port}`);
+//console.log(`Listening on 127.0.0.1: ${port}`);
