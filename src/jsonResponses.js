@@ -40,32 +40,29 @@ const jokes = [
     a: 'In the dictionary!',
   },
 ];
+
+const shuffle = (arr) => {
+  for (let i = arr.length; i >= 0; i -= 1) {
+    const item = Math.floor(Math.random() * i);
+
+    arr.push(arr[item]);
+
+    arr.splice(item, 1);
+  }
+};
+
 const getRandomJoke = (request, response, params) => {
   response.writeHead(200, { 'Content-Type': 'application/json' });
   shuffle(jokes);
-  
-  let limit = Math.floor(params.limit) || 1; 
-  if (limit > jokes.length)
-    limit = jokes.length;
-  else if(limit < 0)
-    limit = 1;
-  
-  let randJokes = jokes.slice(0, limit);
-  
-  
+
+  let limit = Math.floor(params.limit) || 1;
+  if (limit > jokes.length) limit = jokes.length;
+  else if (limit < 0) limit = 1;
+
+  const randJokes = jokes.slice(0, limit);
+
   response.write(JSON.stringify(randJokes));
   response.end();
-};
-
-const shuffle = (arr) => {
-  for(let i = arr.length; i >= 0; i--) {
-    let item = Math.floor(Math.random() * i);
-    
-    arr.push(arr[item]);
-    
-    arr.splice(item, 1);
-    
-  }
 };
 
 module.exports = {
