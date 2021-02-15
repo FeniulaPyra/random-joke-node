@@ -7,7 +7,7 @@ const errorPage = `
   <body>
     <h1>404 - File Not Found!</h1>
     <p>Check your URL, or your typing!!</p>
-    <p>Were you looking for <a href="/random-joke">/random-joke</a> or <a href="/random-joke?limit=3">/random-joke?limit=3</a>?</p>
+    <p>Were you looking for <a href="/random-joke">/random-joke</a> or <a href="/random-jokes?limit=3">/random-jokes?limit=3</a>?</p>
   </body>
 </html>
 `;

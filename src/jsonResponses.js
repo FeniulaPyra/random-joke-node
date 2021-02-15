@@ -51,7 +51,13 @@ const shuffle = (arr) => {
   }
 };
 
-const getRandomJoke = (request, response, params) => {
+const getRandomJoke = (request, response) => {
+  response.writeHead(200, { 'Content-Type': 'application/json' });
+  response.write(JSON.stringify(jokes[Math.floor(Math.random() * jokes.length)]));
+  response.end();
+};
+
+const getRandomJokes = (request, response, params) => {
   response.writeHead(200, { 'Content-Type': 'application/json' });
   shuffle(jokes);
 
@@ -67,4 +73,5 @@ const getRandomJoke = (request, response, params) => {
 
 module.exports = {
   getRandomJoke,
+  getRandomJokes,
 };
