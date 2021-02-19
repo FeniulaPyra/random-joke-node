@@ -51,14 +51,25 @@ const shuffle = (arr) => {
   }
 };
 
-const getRandomJoke = (request, response) => {
-  response.writeHead(200, { 'Content-Type': 'application/json' });
-  response.write(JSON.stringify(jokes[Math.floor(Math.random() * jokes.length)]));
+const getRandomJoke = (request, response, params, acceptedTypes) => {
+  const joke = jokes[Math.floor(Math.random() * jokes.length)];
+  const xmlResponse = `
+  <joke>
+    <q>${joke.q}</q>
+    <a>${joke.a}</a>
+  </joke>
+`;
+  if (acceptedTypes.includes('text/xml')) {
+    response.writeHead(200, { 'Content-Type': 'text/xml' });
+    response.write(xmlResponse);
+  } else {
+    response.writeHead(200, { 'Content-Type': 'application/json' });
+    response.write(JSON.stringify(joke));
+  }
   response.end();
 };
 
-const getRandomJokes = (request, response, params) => {
-  response.writeHead(200, { 'Content-Type': 'application/json' });
+const getRandomJokes = (request, response, params, acceptedTypes) => {
   shuffle(jokes);
 
   let limit = Math.floor(params.limit) || 1;
@@ -67,7 +78,24 @@ const getRandomJokes = (request, response, params) => {
 
   const randJokes = jokes.slice(0, limit);
 
-  response.write(JSON.stringify(randJokes));
+  if (acceptedTypes.includes('text/xml')) {
+    let bigString = '<jokes>';
+    randJokes.forEach((joke) => {
+      bigString += `
+        <joke>
+          <q>${joke.q}</q>
+          <a>${joke.a}</a>
+        </joke>
+      `;
+    });
+    bigString += '</jokes>';
+
+    response.writeHead(200, { 'Content-Type': 'text/xml' });
+    response.write(bigString);
+  } else {
+    response.writeHead(200, { 'Content-Type': 'application/json' });
+    response.write(JSON.stringify(randJokes));
+  }
   response.end();
 };
 

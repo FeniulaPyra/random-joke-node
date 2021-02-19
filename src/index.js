@@ -9,7 +9,7 @@ const url = require('url');
 const query = require('querystring');
 
 const htmlHandler = require('./htmlResponses');
-const jsonHandler = require('./jsonResponses');
+const jsonHandler = require('./responses');
 
 // 3 - locally this will be 3000, on Heroku it will be assigned
 const port = process.env.PORT || process.env.NODE_PORT || 3000;
@@ -26,14 +26,17 @@ const urlStruct = {
 // note that in this course we'll be using arrow functions 100% of the time in our server-side code
 const onRequest = (request, response) => {
   const parsedUrl = url.parse(request.url);
-  const { pathname } = parsedUrl;
 
+  const { pathname } = parsedUrl;
   const params = query.parse(parsedUrl.query);
 
+  let acceptedTypes = request.headers.accept && request.headers.accept.split(',');
+  acceptedTypes = acceptedTypes || [];
+
   if (urlStruct[pathname]) {
-    urlStruct[pathname](request, response, params);
+    urlStruct[pathname](request, response, params, acceptedTypes);
   } else {
-    urlStruct.notFound(request, response);
+    urlStruct.notFound(request, response, params, acceptedTypes);
   }
 };
 
