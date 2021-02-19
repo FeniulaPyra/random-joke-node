@@ -9,16 +9,17 @@ const url = require('url');
 const query = require('querystring');
 
 const htmlHandler = require('./htmlResponses');
-const jsonHandler = require('./responses');
+const responseHandler = require('./responses');
+const cssHandler = require('./cssResponses');
 
 // 3 - locally this will be 3000, on Heroku it will be assigned
 const port = process.env.PORT || process.env.NODE_PORT || 3000;
 
 const urlStruct = {
-  '/random-joke': jsonHandler.getRandomJoke,
-  '/random-jokes': jsonHandler.getRandomJokes,
+  '/random-joke': responseHandler.getRandomJoke,
+  '/random-jokes': responseHandler.getRandomJokes,
+  '/default-styles': cssHandler.getDefaultStyles,
   notFound: htmlHandler.get404Response,
-
 };
 
 // 7 - this is the function that will be called every time a client request comes in
@@ -33,10 +34,12 @@ const onRequest = (request, response) => {
   let acceptedTypes = request.headers.accept && request.headers.accept.split(',');
   acceptedTypes = acceptedTypes || [];
 
+  const httpMethod = request.method;
+
   if (urlStruct[pathname]) {
-    urlStruct[pathname](request, response, params, acceptedTypes);
+    urlStruct[pathname](request, response, params, acceptedTypes, httpMethod);
   } else {
-    urlStruct.notFound(request, response, params, acceptedTypes);
+    urlStruct.notFound(request, response);
   }
 };
 

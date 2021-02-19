@@ -51,7 +51,7 @@ const shuffle = (arr) => {
   }
 };
 
-const getRandomJoke = (request, response, params, acceptedTypes) => {
+const getRandomJoke = (request, response, params, acceptedTypes, httpMethod) => {
   const joke = jokes[Math.floor(Math.random() * jokes.length)];
   const xmlResponse = `
   <joke>
@@ -59,17 +59,26 @@ const getRandomJoke = (request, response, params, acceptedTypes) => {
     <a>${joke.a}</a>
   </joke>
 `;
+  let bigString;
+
+  const headers = {};
+
   if (acceptedTypes.includes('text/xml')) {
-    response.writeHead(200, { 'Content-Type': 'text/xml' });
-    response.write(xmlResponse);
+    headers['Content-Type'] = 'text/xml';
+    bigString = xmlResponse;
   } else {
-    response.writeHead(200, { 'Content-Type': 'application/json' });
-    response.write(JSON.stringify(joke));
+    headers['Content-Type'] = 'application/json';
+    bigString = JSON.stringify(joke);
   }
+
+  if (httpMethod === 'HEAD') headers['Content-Length'] = Buffer.byteLength(bigString, 'utf-8');
+
+  response.writeHead(200, headers);
+  if (httpMethod === 'GET') response.write(bigString);
   response.end();
 };
 
-const getRandomJokes = (request, response, params, acceptedTypes) => {
+const getRandomJokes = (request, response, params, acceptedTypes, httpMethod) => {
   shuffle(jokes);
 
   let limit = Math.floor(params.limit) || 1;
@@ -78,8 +87,11 @@ const getRandomJokes = (request, response, params, acceptedTypes) => {
 
   const randJokes = jokes.slice(0, limit);
 
+  const headers = {};
+
+  let bigString;
   if (acceptedTypes.includes('text/xml')) {
-    let bigString = '<jokes>';
+    bigString = '<jokes>';
     randJokes.forEach((joke) => {
       bigString += `
         <joke>
@@ -88,14 +100,20 @@ const getRandomJokes = (request, response, params, acceptedTypes) => {
         </joke>
       `;
     });
-    bigString += '</jokes>';
 
-    response.writeHead(200, { 'Content-Type': 'text/xml' });
-    response.write(bigString);
+    bigString += '</jokes>';
+    headers['Content-Type'] = 'text/xml';
   } else {
-    response.writeHead(200, { 'Content-Type': 'application/json' });
-    response.write(JSON.stringify(randJokes));
+    bigString = JSON.stringify(randJokes);
+    headers['Content-Type'] = 'application/json';
   }
+
+  if (httpMethod === 'HEAD') {
+    headers['Content-Length'] = Buffer.byteLength(bigString, 'utf-8');
+  }
+
+  response.writeHead(200, headers);
+  if (httpMethod === 'GET') response.write(bigString);
   response.end();
 };
 
